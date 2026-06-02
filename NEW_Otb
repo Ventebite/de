@@ -1,0 +1,517 @@
+#HQ-RTR
+p 1234 | com | con | clo t g +3 | ho hq-rtr.sirius-exam.org | ip r 0.0.0.0/0 172.16.1.1 |
+
+o s APACHE || p 80 |
+
+o s SSH || p 2026 |
+
+o n LAN_NET || ip ad 192.168.1.1-192.168.1.30 || ip ad 192.168.2.1-192.168.2.30 |
+
+o n SERVER || ip ad 192.168.1.2
+
+o n WAN_NET || ip ad 172.16.1.2
+
+sysl ma 3 | sysl fi-si 512 | sysl fi t /default || s i | u
+
+net_admin || pa || pr 15 |
+
+dom l e | domain n sirius-exam.org | se z UNTRUST | se z TRUST |
+
+k auth_ospf || k 1 || k a 123123123 |
+
+ro+r o 1 || ro+r 10.10.10.1 || ar 0.0.0.0 ||| ne 192.168.1.0/27 ||| ne 192.168.2.0/27 ||| ne 10.10.10.0/28 ||| ena || ena |
+
+int g 1/0/2 || sec UNTRUST || ip f d || ip add 172.16.1.2/28 |
+
+int g 1/0/3 || sec TRUST || ip f d || ip add 192.168.1.1/27 |
+
+int g 1/0/4 || sec TRUST || ip f d || ip add 192.168.2.1/27 |
+tu g 10 || ttl 255 || ip f d || local add 172.16.1.2 || re ad 172.16.2.2 || ip ad 10.10.10.1/28 || ip ospf inst 1 || ip ospf au key-c auth_ospf || ip ospf au a md5 || ip ospf || ena |
+
+sec zo-p TRUST UNTRUST || ru 1 ||| a p ||| m s-a ob n LAN_NET ||| ena |
+
+sec zo-p UNTRUST TRUST || ru 1 ||| a p ||| m p tcp ||| m d-ad ob  n SERVER ||| m d-p o APACHE ||| ena || rule 2 ||| a p ||| m p t ||| m d-a o n SERVER ||| m d-p o SSH ||| ena | se p d | ip fi d |
+
+na d || p SERVER ||| ip ad 192.168.1.2 || ruleset DNAT ||| f z UNTRUST ||| ru 1 ||| m p t ||| m d-a o n WAN_NET ||| m d-p o APACHE ||| a d p SERVER ||| ena || ru 2 ||| m p t ||| m d-a o n WAN_NET ||| m d-p o SSH ||| a d p SERVER ||| ena |
+
+na s || p WAN_NET ||| ip ad 172.16.1.2 || ruleset SNAT ||| t z UNTRUST || rule 1 ||| m s-ad o n LAN_NET ||| a s p WAN_NET ||| ena |
+
+ip dhcp-server | ip dhcp-server p client || netw 192.168.2.0/27 || dom sirius-exam.org || ad-r 192.168.2.1-192.168.2.30 || exc 192.168.2.1 || de-r 192.168.2.1 || dn 192.168.1.2,77.88.8.8 |
+
+| ip ssh ser | ntp ena | no ntp b ena | ntp ser 172.16.2.1
+
+#BR-RTR
+p 1234 | com | con | clo t g +3 | ho br-rtr.sirius-exam.org | ip r 0.0.0.0/0 172.16.2.1 |
+
+o s TESTAPP || p 8080 |
+
+o s SSH || p 2026 |
+
+o n LAN_NET || ip a 192.168.3.1-192.168.3.14 |
+
+o n SERVER || ip a 192.168.3.2 |
+
+o n WAN_NET || ip a 172.16.2.2 |
+
+sysl ma 3 | sysl fi- 512 | sysl fi t /default || s i |
+
+u net_admin || pa || pr 15 |
+
+dom l ena | dom n sirius-exam.org |
+
+se z UNTRUST | se z TRUST
+
+k auth_ospf || k 1 || k a 123123123 |
+
+ro+r o 1 || ro+r 10.10.10.2 || ar 0.0.0.0 ||| ne 192.168.3.0/28 ||| ne 10.10.10.0/28 ||| ena || ena|
+
+int g 1/0/2 || sec UNTRUST || ip f d || ip add 172.16.2.2/28 |
+
+int g 1/0/3 || sec TRUST || ip f d || ip add 192.168.3.1/28 |
+
+tu g 10 || ttl 255 || ip f d || local ad 172.16.2.2 || re ad 172.16.1.2 || ip ad 10.10.10.2/28 || ip o i 1 || ip o au key-c auth_ospf || ip o au a md5 || ip ospf || ena |
+
+sec z-p TRUST UNTRUST || ru 1 ||| a p ||| m s-a o LAN_NET ||| enable |
+
+sec z-p UNTRUST TRUST || ru 1 ||| a p ||| m p tcp ||| m d-a o n SERVER ||| m d-p o TESTAPP ||| ena || ru 2 ||| a p ||| m p tcp ||| m d-a o n SERVER ||| m d-p o SSH ||| ena |
+
+sec pa d | ip fi d |
+
+nat d || p SERVER ||| ip ad 192.168.3.2 || ruleset DNAT ||| f z UNTRUST || rule 1 ||| m p tcp ||| m d-ad o n WAN_NET ||| a d p SERVER ||| ena || rule 2 ||| m p tcp ||| m d-p o TESTAPP ||| a d p SERVER ||| ena |
+
+nat so || p WAN_NET ||| ip ad 172.16.2.2 || ruleset SNAT ||| to z UNTRUST || rule 1 |||| m s-a o n LAN_NET |||| a s p WAN_NET ||| ena |
+
+ip ssh ser | ntp ena | no ntp broa ena | ntp server 172.16.2.1
+
+#ISP
+hostn+ctl set-hostname isp.sirius-exam.org; exec bash
+hostn
+nmcli con up Проводное\ подключение\ 2
+nmcli con sh ВЫВВЛ
+nmcli con mod Проводное\ подключение\ 2  -ipv4.me ma -ipv4.add 172.16.1.1/28
+nmcli con mod Проводное\ подключение\ 3  -ipv4.me ma -ipv4.add 172.16.2.1/28
+nmcli con up Проводное\ подключение\ 2
+nmcli con up Проводное\ подключение\ 3
+nmcli con sh
+ip -br a -> enp7s1 UP 10.23.69.#(65)/23 | enp7s2 UP 172.16.1.1/28 | enp7s3 UP 172.16.2.1/28
+ping 172.16.1.2 | 172.16.2.2
+ip r
+-------------------------------------------------------
+mart
+nano /etc/sysctl.d/99-ip-forward.conf -> net.ipv4.ip_forward = 1
+sysctl -p /etc/sysctl.d/99-ip-forward.conf
+sysctl -p /etc/sysctl.d/99-ip-forward.conf выв sysctl -p net.ipv4.ip_forward = 1
+nano /etc/nftables.conf ->
+flush ruleset
+
+table ip nat {
+  chain postrouting {
+     type nat hook postrouting priority srcnat;
+     oifname "enp7s1" masquerade
+  }
+}
+systemctl enable --now nftables
+systemctl restart nftables
+nft list ruleset выедит правило /etc/nftables.conf
+ping 8.8.8.8
+-------------------------------------------------------
+dani
+dnf install iptables-services
+systemctl status iptables
+systemctl status nftables должно disble
+systemctl enable --now iptables
+iptables -L -nv
+ip -br a
+iptables -t nat -A POSTROUTING -s 172.16.1.0/28 -o enp7s1(ВОПРОС) -j MASQUERADE
+iptables -t nat -A POSTROUTING -s 172.16.2.0/28 -o enp7s1(ВОПРОС) -j MASQUERADE
+iptables -L -nv
+iptables -D INPUT 5
+iptables -L FORWARD -nv
+iptables -D FORWARD 1
+iptables-save > /etc/sysconfig/iptables
+{
+*filter
+:INMPUT ACCEPT [????] #34:5756
+:FORWARD ACCEPT [0:0]
+^
+}
+---------------------------------------
+nano /etc/sysctl.conf ->net.ipv4.ip_forward
+sysctl -a | grep ipv4.ip_forward строки = 1 | _update_priority = 1 | _user_pmtu = 0
+sysctl -p -> должно 0|2|1|2|2|1
+sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+timedatectl set-timezone Europe/Moscow
+reboot
+nano /etc/chrony.conf -> server все # server 0.ru.pool.ntp.otg iburst
+-> local stratum 5
+systemctl enable --now chronyd
+systemctl restart chronyd
+chrony source
+chrony clients
+nano /etc/nginx/nginx.conf -> server ntp2-4 поставить # | server 0.ru.pool.ntp.org iburst | allow 0.0.0.0/0 | local stratum 5
+----nano /etc/nginx/conf.d/exam.conf mart
+server {
+    listen 80;
+    server_name web.sirius-exam.org;
+
+    location / {
+        proxy_pass http://172.16.1.2:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+
+server {
+    listen 80;
+    server_name docker.sirius-exam.org;
+
+    location / {
+        proxy_pass http://172.16.2.2:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+-----
+nginx -t | is ok | is successful
+systemctl enable --now nginx
+systemctl restart nginx
+curl -H 'Host: web.sirius-exam.org' http://127.0.0.1
+curl -H 'Host: docker.sirius-exam.org' http://127.0.0.1
+htpasswd -c /etc/nginx/.htpasswd WEB -> Введите пароль P@ssw0rd дважды
+nano /etc/nginx/conf.d/exam.conf -> под location / напимать ->
+auth_basic "Restricted area";
+auth_basic_user_file /etc/nginx/.htpasswd;
+
+nginx -t
+systemctl restart nginx
+curl -I -H 'Host: web.sirius-exam.org' http://127.0.0.1 должно 401
+curl -u WEB:P@ssw0rd -H 'Host: web.sirius-exam.org' http://127.0.0.1
+---------------------------------
+#HQ-SRV
+hostn+ctl set-hostname hq-srv.sirius-exam.org; exec bash;
+hostn
+nano /etc/ssh/ssh_config ->include /etc/ssh/ssh_config.d/*.conf
+nano /etc/ssh/sshd_config
+->
+Port 2026
+MaxAuthTries 2
+AllowUsers sshuser
+PermitRootLogin no
+Banner /etc/ssh/banner
+---
+nmcli con sh ВЫВВЛ
+nmcli con mod Проводное\ подключение\ 1 ipv4.me ma ipv4.ad 192.168.1.2/27 ipv4.g 192.168.1.1 ipv4.dns 77.88.8.8
+nmcli con up Проводное\ подключение\ 1
+ip -r
+выв default via 192.168.100.1 dev enp7s1 proto static metric 100
+выв 192.168.100.0/27 dev enp7s1 proto kernel scope link src 192.168.100.2
+ping 192.168.1.1 | 192.168.2.1 192.168.2.2 ВЫВВЛ
+useradd -m -s /bin/bash -U -u 2026 sshuser
+usermod -aG wheel sshuser
+passwd sshuser | P@ssw0rd
+visudo -> sshuser ALL=(ALL) NOPASSWD:ALL | :wq
+chmod 440 /etc/sudoers.d/sshuser
+id sshuser
+выв uid=2026(sshuser) gid=2026(sshuser) groups=2026(sshuser),10(wheel)
+echo "Authorized access only!" > /etc/ssh/banner
+sudo sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+sshd -t
+systemctl enable --now sshd
+systemctl restart sshd
+ss -tulpn | grep 2026
+lsblk
+mdadm --create /dev/md0 --level=0 --raid-devices=2 /dev/sdb /dev/
+lsblk
+mkfs.ext4 /dev/md0
+lsblk -f
+mkdir -p /raid/nfs
+nano /etc/fstab -> /dev/md0  /raid   ext4 defaults 0 2
+nano /etc/exports -> /raid/nfs  192.168.2.0/27(rw,no_root_squash)
+chmod 0777 /raid/nfs
+exportfs -arv
+mount /dev/md0 /raid
+mkdir /mnt/disk
+mount /dev/sr0 /mnt/disk
+ll /mnt/disk
+umount /mnt/disk
+ping 8.8.8.8
+timedatectl set-timezone Europe/Moscow
+nano /etc/chrony.conf -> server 172.16.1.1 iburst
+systemctl enable --now chronyd
+systemctl restart chronyd
+chronyc sources -v
+chronyc tracking
+dnf install bind
+#Dont install bind -> ps -aux | ps -aux | grep 1091 | kill -9 1091
+nano /etc/named.conf -> подinclud forwarders { 77.88.8.8; 8.8.8.8; };
+nano /etc/named.conf->
+---
+options {
+    listen-on port 53 { any; };
+    listen-on-v6 port 53 { none; };
+    directory "/var/named";
+    allow-query { any; };
+    recursion yes;
+    dnssec-validation no;
+    forwarders { 77.88.8.7; 77.88.8.3; };
+};
+
+zone "sirius-exam.org" IN {
+    type master;
+    file "master/sirius-exam.org.zone";
+};
+
+zone "100.168.192.in-addr.arpa" IN {
+    type master;
+    file "master/192.168.100.rev";
+};
+
+zone "200.168.192.in-addr.arpa" IN {
+    type master;
+    file "master/192.168.200.rev";
+};
+---
+cp /var/named/named.localhost /var/named/master/sirius-exam.org
+nano /var/named/master/sirius-exam.org ->
+---
+$TTL 604800
+@ IN SOA hq-srv.sirius-exam.org. root.sirius-exam.org. (
+  2026010101 600 3600 604800 360 )
+@       IN NS hq-srv.sirius-exam.org.
+hq-rtr  IN A 192.168.100.1
+br-rtr  IN A 192.168.30.1
+hq-srv  IN A 192.168.100.2
+hq-cli  IN A 192.168.200.10
+br-srv  IN A 192.168.30.2
+docker  IN A 172.16.1.1
+web     IN A 172.16.2.1
+---
+cp /var/named/named.localhost /var/named/master/1.168.192.in-addr.arpa
+reboot
+lsblk
+nano /var/named/master/1.168.192.in-addr.arpa ->
+---
+$TTL 604800
+@ IN SOA hq-srv.sirius-exam.org. root.sirius-exam.org. (
+  2026010101 600 3600 604800 360 )
+@ IN NS hq-srv.sirius-exam.org.
+1 IN PTR hq-rtr.sirius-exam.org.
+2 IN PTR hq-srv.sirius-exam.org.
+---
+cp /var/named/master/1.168.192.in-addr.arpa /var/named/master/2.168.192.in-addr.arpa
+cp /var/named/master/1.168.192.in-addr.arpa /var/named/master/3.168.192.in-addr.arpa
+nano /var/named/master/2.168.192.in-addr.arpa ->
+---
+$TTL 604800
+@ IN SOA hq-srv.sirius-exam.org. root.sirius-exam.org. (
+  2026010101 600 3600 604800 360 )
+@ IN NS hq-srv.sirius-exam.org.
+10 IN PTR hq-cli.sirius-exam.org.
+---
+nano /var/named/master/3.168.192.in-addr.arpa ВЫВВЛ
+named-checkconf
+nano /etc/named.conf
+systemctl enable --now named
+named-checkconf ВЫВВЛ
+--------------------------------------------------------------
+#BR-SRV
+systemctl enable --now docker
+docker image ls Перед перерывом
+docker image pull nextcloud:latest
+ввыше команды на перерыве запускать
+hostn+ctl set-hostname br-srv.sirius-exam.org; exec bash
+hostn
+nmcli con sh
+nmcli con mod Проводное\ подключение\ 1 ipv4.me ma ipv4.ad 192.168.3.2/28 ipv4.g 192.168.3.1 ipv4.dns 77.88.8.8
+nmcli con up Проводное\ подключение\ 1
+ping 192.168.3.1
+useradd -m -s /bin/bash -U -u 2026 sshuser
+passwd sshuser | P@ssw0rd
+visudo -> sshuser ALL=(ALL) NOPASSWD:ALL
+echo "Authorized access only!" > /etc/ssh/banner
+sudo sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+reboot
+getenforse -> disabled ХЗ как
+ping 8.8.8.8
+timedatectl set-timezone Europe/Moscow
+lsblk
+mount /dev/sr0 /mnt
+nmcli con mod Проводное\ подключение\ 1 ipv4.dns 192.168.1.2
+nmcli con up Проводное\ подключение\ 1
+nslookup web.sirius-exam.org ВЫВВЛ
+nano /etc/chrony.conf ВЫВВЛ
+systemctl enable --now chronyd
+chrony source ВЫВВЛ
+mkdir testapp
+cd /testapp
+nano docker-compose.yml ВЫВВЛ
+ll /mnt ВЫВВЛ
+docker load < /mnt/docker/mariadb_latest.tar
+docker load < /mnt/docker/site_latest.tar
+docker image ВЫВВЛ
+nano docker-compose.yml ВЫВВЛ
+docker-compose up -d ВЫВВЛ
+docker ps -a ВЫВВЛ
+docker logs db
+nano docker-compose.yml ВЫВВЛ
+docker-compose down -vf
+docker-compose up -d
+docker ps -a ВЫВВЛ
+docker logs testapp ВЫВВЛ
+docker exec -it db bash ВЫВВЛ
+docker exec -it db mysql -u root -p ВЫВВЛ
+docker logs testapp ВЫВВЛ
+docker logs testapp -f -n 10 ВЫВВЛ
+cd testapp/
+docker ps -a
+docker logs -f testapp
+docker-compose image inspect mariadb:10.11 | grep -C3 -i expose ВЫВВЛ
+docker-compose down testapp
+docker-compose up -d testapp ВЫВВЛ
+docker ps -a ВЫВВЛ
+docker logs testapp ВЫВВЛ
+curl localhost:8080 ВЫВВЛ
+
+systemctl restart named -> ошибки journalctl -u named -n 100
+ll 1.168.192.ib-addr.arpa ВЫВВЛ
+nano sirius-exam.org.db
+chown root:named ./*
+ll ../
+ll
+systemctl restart named
+systemctl restart named -> ошибки journalctl -u named -n 100
+nano /etc/named.conf
+cd ../
+ll master/3.168.192.in-addr.arpa
+chmod 750 master named
+journalctl -u named -n 100
+ll master/1.168.192.in-addr.arpa
+ll master
+nano /etc/named.conf ВЫВВЛ
+cd master
+named-checkconf
+nano /etc/named.conf ВЫВВЛ
+ll
+nano /etc/named.conf ВЫВВЛ
+systemctl restart named
+nano sirius-exam.org ВЫВВЛ
+ll /var/named/ ВЫВВЛ
+cd master
+named-checkconf ВЫВВЛ
+ll ВЫВВЛ
+cp ../name.localhost ./
+cat named.localhost ВЫВВЛ
+nano sirius-exam.org ВЫВВЛ
+systemctl restart named
+nslookup web.sirius-exam.org ВЫВВЛ
+nmcli con mod Проводное\ подключение\ 1 ipv4.dns 192.168.1.2
+nslookup web.sirius-exam.org ВЫВВЛ
+nslookup hq-rtr.sirius-exam.org ВЫВВЛ
+resolvectl flush-caches
+nslookup hq-rtr.sirius-exam.org ВЫВВЛ
+systemctl status named
+ping ya.ru | docker.sirius-exam.org ВЫВВЛ | nmcli con up Проводное\ подключение\ 1 | br-rtr.sirius-exam.org
+systemctl status nfs-server.service
+systemctl enable --now nfs-server.service
+nano /etc/chrony.conf ВЫВВЛ
+systemctl enable --now chronyd
+systemctl restart chronyd
+chrony sources ВЫВВЛ
+ll /raid/nfs ВЫВВЛ
+cat /etc/exports ВЫВВЛ
+lsblk ВЫВВЛ
+mkdir /raid/nfs
+chmod 0777 /raid/nfs
+exportfs -arv
+ll /raid/nfs
+mount /dev/sr0 /mnt
+ll /mnt/web
+systemctl enable --now mariadb
+cd /
+mysql_secure_installation
+mysql -u root -p
+mysql webdb < /mnt/web/dump.sql
+cp /mnt/web/index.php /var/www/html/
+cp /mnt/web/logo.php /var/www/html/
+systemctl enable --now httpd
+nano /var/www/html/index.php НЕПОНЯНО ГДЕ ЛЕЖИТ ФАЙЛ
+chmod 0755 /var/www/html & chmod 0755 /var/www/html/*
+systemctl restart httpd
+
+#ISP
+curl 172.16.2.2:8080 пока ошибка скорее всего позже надо последняя на сервере команда
+curl 172.16.2.1
+curl 172.16.1.2
+ssh sshuser@172.16.1.2 -p 2026 ьез ощибок
+curl 172.16.2.2:80 ВЫВВЛ
+ssh sshuser@172.16.1.2 -p 2026 ВЫВВЛ история y
+curl http://172.16.1.2
+htpasswd -c /etc/nginx/.htpasswd ВЫВВЛ
+htpasswd -c /etc/nginx/.htpasswd WEB
+systemctl restart nginx
+
+-----------------------------
+
+
+#HQ-CLI
+hostn+ctl set-hostname hq-cli.sirius-exam.org; exec bash
+ip -br a
+nmcli con sh ВЫВВЛ
+nmcli con mod Проводное\ подключение\ 1 ipv4.me ma ipv4.ad 192.168.2.2/27 ipv4.g 192.168.1.1 ipv4.dns 77.88.8.8
+nmcli con up Проводное\ подключение\ 1
+ping 192.168.2.1 | 192.168.1.1 | 192.168.1.2 8.8.8.8 ВЫВВЛ
+nmcli con mod Проводное\ подключение\ 1  -ipv4.me ma -ipv4.add 192.168.2.2 ipv4.me auto
+nmcli con up Проводное\ подключение\ 1
+ip -br a -> enp7s1 up 192.168.2.3/27 ВЫВВЛ
+nmcli d sh ВЫВВЛ
+nmcli con mod Проводное\ подключение\ 1 -ipv4.me ma ipv4.ad 192.168.2.2
+nmcli con up Проводное\ подключение\ 1
+ip -br a ВЫВВЛ
+ip a del 192.168.2.2/27 dev enp7s1 ВЫВВЛ
+ip -br a ВЫВВЛ
+nmcli con mod Проводное\ подключение\ 1 -ipv4.address "" ipv4.gateway ""
+nmcli con up Проводное\ подключение\ 1
+ip -br a ВЫВВЛ
+nmcli con up Проводное\ подключение\ 1
+nmcli d sh
+nmcli con mod Проводное\ подключение\ 1 ipv4.dns ""
+nmcli con up Проводное\ подключение\ 1
+nmcli d sh ВЫВВЛ
+sudo sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+timedatectl set-timezone Europe/Moscow
+dnf install yandex-browser-stable ВЫВВЛ
+ping br-srv.sirius-exam.org
+resolvectl flush-caches ВЫВВЛ
+ping br-srv.sirius-exam.org идет
+nmcli d sh ВЫВВЛ
+ping 192.168.1.1 | 192.168.1.2 идет
+nslookup web.sirius-exam.org ВЫВВЛ
+nslookup docker.sirius-exam.org ВЫВВЛ
+nc -zv 192.168.1.2 53 ВЫВВЛ
+nmcli d sh ВЫВВЛ
+nslookup docker.sirius-exam.org ВЫВВЛ
+mkdir /mnt/nfs
+nano /etc/fstab ВЫВВЛ
+reboot
+lsblk ВЫВВЛ
+mount ВЫВВЛ
+cat /etc/fstab
+systemctl status fstab
+lsblk ВЫВВЛ
+ll /mnt/nfs ВЫВВЛ
+touch /mnt/nfs/1
+reboot
+lsblk ВЫВВЛ
+mount ВЫВВЛ
+touch /raid/nfs/q
+touch /mnt/nfs/1
+nano /etc/chrony.conf ВЫВВЛ
+nslookup web.sirius-exam.org | 192.168.2.2 | 192.168.1.1
+systemctl restart chronyd
+systemctl enable --now chronyd
+chronyс sources ВЫВВЛ
+user-cli# nslookup web.sirius-exam.org много
+yandex-browser страница http://192.168.1.2 http://192.168.3.2:8080 http://web.sirius-exam.org http://docker.sirius-exam.org
+********************************
