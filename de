@@ -1,0 +1,216 @@
+# #HQ-RTR
+# This /// | p 1234 | com | con | clo t g +3 | ho hq-rtr.sirius-exam.org \\\
+#
+#/// ip r 0.0.0.0/0 172.16.1.1 | o s APACHE || p 80 |
+#
+# This fixes CVE-2005-4890 and Possibly breaks Some versions of kdesu
+#/// o s SSH || p 2026 | \\\how to
+#
+# This fixes CVE-2005-4890 and Possibly breaks Some versions of kdesu
+#/// o n LAN_NET || ip ad 192.168.1.1-192.168.1.30 || ip ad 192.168.2.1-192.168.2.30|\
+#
+# This fixes CVE-2005-4890 and Possibly breaks Some versions of kdesu
+# /// o n SERVER || ip ad 192.168.1.2 || \\\
+#
+# This fixes CVE-2005-4890 and Possibly breaks Some versions of kdesu
+# /// o n WAN_NET || ip ad 172.16.1.2 \\\
+#
+# This fixes CVE-2005-4890 and Possibly breaks Some versions of kdesu
+#/// sysl ma 3 | sysl fi-si 512 | sysl fi t /default || s i | u \\\
+#
+# This fixes CVE-2005-4890 and Possibly breaks Some versions of kdesu
+# See the /// net_admin || pa || pr 15 | \\\ to write a sudoers file.
+#
+# This fixes CVE-2005-4890 and Possibly breaks Some versions of kdesu
+# /// dom l e | domain n sirius-exam.org | se z UNTRUST | se z TRUST | \\\
+#
+# This fixes CVE-2005-4890 and Possibly breaks Some versions of kdesu
+# /// k auth_ospf || k 1 || k a 123123123 | \\\
+#
+# This fixes CVE-2005-4890 and Possibly breaks Some versions of kdesu
+#/// ro+r o 1 || ro+r 10.10.10.1 || ar 0.0.0.0 ||| ne 192.168.1.0/27 |||
+#/// ||| ne 192.168.2.0/27 ||| ne 10.10.10.0/28 ||| ena || ena | \\\
+#
+# This fixes CVE-2005-4890 and Possibly breaks Some versions of kdesu
+# /// int g 1/0/2 || sec UNTRUST || ip f d || ip add 172.16.1.2/28 | \\\
+#
+# This fixes CVE-2005-4890 and Possibly breaks Some versions of kdesu
+#/// int g 1/0/3 || sec TRUST || ip f d || ip add 192.168.1.1/27 | \\\
+#
+# This fixes CVE-2005-4890 and Possibly breaks Some versions of kdesu
+#/// int g 1/0/4 || sec TRUST || ip f d || ip add 192.168.2.1/27 | \\\
+#
+# This fixes CVE-2005-4890 and Possibly breaks Some versions of kdesu
+#/// tu g 10 || ttl 255 || ip f d || local add 172.16.1.2 || re ad 172.16.2.2 \\\
+#/// || ip ad 10.10.10.1/28 || ip ospf inst 1 || ip ospf au key-c auth_ospf \\\
+#/// || ip ospf au a md5 || ip ospf || ena | \\\
+#
+# This fixes CVE-2005-4890 and Possibly breaks Some versions of kdesu
+#/// sec zo-p TRUST UNTRUST || ru 1 ||| a p ||| m s-a ob n LAN_NET ||| ena | \\\
+#
+# This fixes CVE-2005-4890 and Possibly breaks Some versions of kdesu
+#/// sec zo-p UNTRUST TRUST || ru 1 ||| a p ||| m p tcp ||| m d-ad ob  n SERVER ||| \\
+#/// m d-p o APACHE ||| ena || rule 2 ||| a p ||| m p t ||| m d-a o n SERVER ||| \\\
+#/// m d-p o SSH ||| ena | se p d | ip fi d | \\\
+#
+# This fixes CVE-2005-4890 and Possibly breaks Some versions of kdesu
+#/// na d || p SERVER ||| ip ad 192.168.1.2 || ruleset DNAT ||| f z UNTRUST ||| ru 1 \
+#/// ||| m p t ||| m d-a o n WAN_NET ||| m d-p o APACHE ||| a d p SERVER ||| ena || \\
+#/// ru 2 ||| m p t ||| m d-a o n WAN_NET ||| m d-p o SSH ||| a d p SERVER ||| ena | \
+#
+# This fixes CVE-2005-4890 and Possibly breaks Some versions of kdesu
+#/// na s || p WAN_NET ||| ip ad 172.16.1.2 || ruleset SNAT ||| t z UNTRUST || \\\
+#/// rule 1 ||| m s-ad o n LAN_NET ||| a s p WAN_NET ||| ena | \\\
+#
+# This fixes CVE-2005-4890 and Possibly breaks Some versions of kdesu
+#/// ip dhcp-server | ip dhcp-server p client || netw 192.168.2.0/27 ||  \\\
+#/// dom sirius-exam.org || ad-r 192.168.2.1-192.168.2.30 || exc 192.168.2.1 || \\\
+#/// de-r 192.168.2.1 || dn 192.168.1.2,77.88.8.8 | \\\
+#
+# This fixes CVE-2005-4890 and Possibly breaks Some versions of kdesu
+#/// | ip ssh ser | ntp ena | no ntp b ena | ntp ser 172.16.2.1 \\\
+#
+# #BR-RTR
+# This /// p 1234 | com | con | clo t g +3 | ho br-rtr.sirius-exam.org | \\\
+# /// ip r 0.0.0.0/0 172.16.2.1 | \\\
+#
+# While you Shouldn't Normally as root, You Need to With Etckeeper
+# /// o s TESTAPP || p 8080 | o s SSH || p 2026 | \\\
+#
+#While you Shouldn't Normally as root, You Need to With Etckeeper
+#/// o n LAN_NET || ip a 192.168.3.1-192.168.3.14 | \\\
+# While you Shouldn't Normally as root, You Need to With Etckeeper
+#/// o n SERVER || ip a 192.168.3.2 | \\\
+#
+## While you Shouldn't Normally as root, You Need to With Etckeeper
+#/// o n WAN_NET || ip a 172.16.2.2 | \\\
+#
+# While you Shouldn't Normally as root, You Need to With Etckeeper
+#/// sysl ma 3 | sysl fi- 512 | sysl fi t /default || s i | \\\
+#
+# While you Shouldn't Normally as root, You Need to With Etckeeper
+#/// u net_admin || pa || pr 15 | \\\
+#/// dom l ena | dom n sirius-exam.org | \\\
+#
+# While you Shouldn't Normally as root, You Need to With Etckeeper
+#/// se z UNTRUST | se z TRUST \\\
+
+# While you Shouldn't Normally as root, You Need to With Etckeeper
+#/// k auth_ospf || k 1 || k a 123123123 | \\\
+
+# While you Shouldn't Normally as root, You Need to With Etckeeper
+#/// ro+r o 1 || ro+r 10.10.10.2 || ar 0.0.0.0 ||| ne 192.168.3.0/28 ||| \\\
+#/// ne 10.10.10.0/28 ||| ena || ena | \\\
+
+# While you Shouldn't Normally as root, You Need to With Etckeeper
+# /// int g 1/0/2 || sec UNTRUST || ip f d || ip add 172.16.2.2/28 | \\\
+# While you Shouldn't Normally as root, You Need to With Etckeeper
+# /// int g 1/0/3 || sec TRUST || ip f d || ip add 192.168.3.1/28 | \\\
+# While you Shouldn't Normally as root, You Need to With Etckeeper
+# /// tu g 10 || ttl 255 || ip f d || local ad 172.16.2.2 || re ad 172.16.1.2 || \\\
+# /// ip ad 10.10.10.2/28 || ip o i 1 || ip o au key-c auth_ospf || \\\
+# /// ip o au a md5 || ip ospf || ena | \\\
+#
+# While you Shouldn't Normally as root, You Need to With Etckeeper
+#/// sec z-p TRUST UNTRUST || ru 1 ||| a p ||| m s-a o LAN_NET ||| enable | \\\
+#
+# While you Shouldn't Normally as root, You Need to With Etckeeper
+#/// sec z-p UNTRUST TRUST || ru 1 ||| a p ||| m p tcp ||| m d-a o n SERVER  \\\
+#/// ||| m d-p o TESTAPP ||| ena || ru 2 ||| a p ||| m p tcp ||| \\\
+#/// m d-a o n SERVER ||| m d-p o SSH ||| ena | \\\
+#
+# While you Shouldn't Normally as root, You Need to With Etckeeper
+#/// sec pa d | ip fi d | \\
+#
+# While you Shouldn't Normally as root, You Need to With Etckeeper
+#
+#/// nat d || p SERVER ||| ip ad 192.168.3.2 || ruleset DNAT ||| f z UNTRUST  \\\
+#/// || rule 1 ||| m p tcp ||| m d-ad o n WAN_NET ||| a d p SERVER ||| ena || \\\
+#/// rule 2 ||| m p tcp ||| m d-p o TESTAPP ||| a d p SERVER ||| ena | \\\
+#
+# While you Shouldn't Normally as root, You Need to With Etckeeper
+#
+#/// ip ssh ser | ntp ena | no ntp broa ena | ntp server 172.16.2.1 \\\
+# While you Shouldn't Normally as root, You Need to With Etckeeper
+# While you Shouldn't Normally as root, You Need to With Etckeeper
+# While you Shouldn't Normally as root, You Need to With Etckeeper
+# While you Shouldn't Normally as root, You Need to With Etckeeper
+#
+#
+#
+# #ISP
+# This /// hostn+ctl set-hostname isp.sirius-exam.org; exec bash \\\
+#/// hostn \\\
+#/// nmcli con up Проводное\ подключение\ 2 \\\
+#/// nmcli con sh ВЫВВЛ \\\
+#/// nmcli con mod Проводное\ подключение\ 2  -ipv4.me ma -ipv4.add 172.16.1.1/28 \\\
+#/// nmcli con mod Проводное\ подключение\ 3  -ipv4.me ma -ipv4.add 172.16.2.1/28 \\\
+#/// nmcli con up Проводное\ подключение\ 2 \\\
+#/// nmcli con up Проводное\ подключение\ 3 \\\
+#/// nmcli con sh  \\\
+#/// ip -br a -> enp7s1 UP 10.23.69.#(65)/23 | enp7s2 UP 172.16.1.1/28 |
+#/// | enp7s3 UP 172.16.2.1/28 \\\
+#/// ping 172.16.1.2 | 172.16.2.2 \\\
+# Per-user preferences; root won't have sensible values for them.
+#Defaults:%sudo env_keep += "EMAIL DEBEMAIL DEBFULLNAME"
+# #ISP
+# This /// hostn+ctl set-hostname isp.sirius-exam.org; exec bash \\\
+#/// hostn \\\
+#HQ-SRV
+# This /// hostn+ctl set-hostname hq-srv.sirius-exam.org; exec bash;
+#/// hostn
+#/// nmcli con sh ВЫВВЛ
+#/// nmcli con mod Проводное\ подключение\ 1 ipv4.me ma ipv4.ad 192.168.1.2/27  |
+#///      ipv4.g 192.168.1.1 ipv4.dns 77.88.8.8 \\\
+#/// nmcli con up Проводное\ подключение\ 1
+#/// ping 192.168.1.1 | 192.168.2.1 192.168.2.2 ВЫВВЛ (не пингуется)
+#/// useradd -m -s /bin/bash -U -u 2026 sshuser
+#/// passwd sshuser | P@ssw0rd
+#/// visudo -> sshuser ALL=(ALL) NOPASSWD:ALL | :wq
+#/// echo "Authorized access only!" > /etc/ssh/banner
+#/// nano /etc/selinux/config -> ((/SELINUX=disabled ))
+##BR-SRV
+# This /// hostn+ctl set-hostname br-srv.sirius-exam.org; exec bash
+#/// hostn
+#/// nmcli con sh
+#/// nmcli con mod Проводное\ подключение\ 1 ipv4.me ma ipv4.ad 192.168.3.2/28 ipv4.g
+# |192.168.3.1 ipv4.dns 77.88.8.8
+#/// nmcli con up Проводное\ подключение\ 1
+#/// ping 192.168.3.1
+#/// useradd -m -s /bin/bash -U -u 2026 sshuser
+#/// passwd sshuser | P@ssw0rd
+#/// visudo -> sshuser ALL=(ALL) NOPASSWD:ALL
+#// echo "Authorized access only!" > /etc/ssh/banne
+#// sudo sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+
+# Ditto for GPG agent
+#Defaults:%sudo env_keep += "GPG_AGENT_INFO"
+
+# Host alias specification
+
+# User alias specification
+
+# Cmnd alias specification
+
+# User privilege specification
+root	ALL=(ALL:ALL) ALL
+
+# Allow members of group sudo to execute any command
+%sudo	ALL=(ALL:ALL) ALL
+
+
+# Host alias specification
+
+# User alias specification
+
+# Cmnd alias specification
+
+# User privilege specification
+root	ALL=(ALL:ALL) ALL
+
+# Allow members of group sudo to execute any command
+%sudo	ALL=(ALL:ALL) ALL
+
+# See sudoers(5) for more information on "@include" directives:
+
+@includedir /etc/sudoers.d
